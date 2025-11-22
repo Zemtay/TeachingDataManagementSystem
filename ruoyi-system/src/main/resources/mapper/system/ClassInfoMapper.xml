@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ClassInfoMapper">
+    
+    <resultMap type="ClassInfo" id="ClassInfoResult">
+        <result property="id"         column="id"         />
+        <result property="courseName" column="course_name" />
+        <result property="courseId"   column="course_id"   />
+        <result property="courseNum"  column="course_num"  />
+        <result property="courseType" column="course_type" />
+        <result property="totalStudents" column="total_students" />
+        <result property="classId"    column="class_id"    />
+        <result property="eaclassId"  column="EAclass_id"  />
+        <!-- 新增：映射“班级数统计结果”（对应selectCourseClassCount的count字段） -->
+        <result property="count"      column="count"       />
+    </resultMap>
+
+    <sql id="selectClassInfoVo">
+        select id, course_name, course_id, course_num, course_type, total_students, class_id, EAclass_id from class_info
+    </sql>
+
+    <select id="selectClassInfoList" parameterType="ClassInfo" resultMap="ClassInfoResult">
+        <include refid="selectClassInfoVo"/>
+        <where>  
+            <if test="courseName != null  and courseName != ''"> and course_name like concat('%', #{courseName}, '%')</if>
+            <if test="courseId != null  and courseId != ''"> and course_id = #{courseId}</if>
+            <if test="courseNum != null  and courseNum != ''"> and course_num = #{courseNum}</if>
+            <if test="courseType != null  and courseType != ''"> and course_type = #{courseType}</if>
+            <if test="totalStudents != null "> and total_students = #{totalStudents}</if>
+            <if test="classId != null  and classId != ''"> and class_id = #{classId}</if>
+            <if test="eaclassId != null  and eaclassId != ''"> and EAclass_id = #{eaclassId}</if>
+            <if test="courseNameList != null and courseNameList.size() > 0">
+                AND course_name IN
+                <foreach collection="courseNameList" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectClassInfoById" parameterType="Long" resultMap="ClassInfoResult">
+        <include refid="selectClassInfoVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertClassInfo" parameterType="ClassInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into class_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="courseName != null and courseName != ''">course_name,</if>
+            <if test="courseId != null and courseId != ''">course_id,</if>
+            <if test="courseNum != null">course_num,</if>
+            <if test="courseType != null">course_type,</if>
+            <if test="totalStudents != null">total_students,</if>
+            <if test="classId != null and classId != ''">class_id,</if>
+            <if test="eaclassId != null">EAclass_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="courseName != null and courseName != ''">#{courseName},</if>
+            <if test="courseId != null and courseId != ''">#{courseId},</if>
+            <if test="courseNum != null">#{courseNum},</if>
+            <if test="courseType != null">#{courseType},</if>
+            <if test="totalStudents != null">#{totalStudents},</if>
+            <if test="classId != null and classId != ''">#{classId},</if>
+            <if test="eaclassId != null">#{eaclassId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateClassInfo" parameterType="ClassInfo">
+        update class_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="courseName != null and courseName != ''">course_name = #{courseName},</if>
+            <if test="courseId != null and courseId != ''">course_id = #{courseId},</if>
+            <if test="courseNum != null">course_num = #{courseNum},</if>
+            <if test="courseType != null">course_type = #{courseType},</if>
+            <if test="totalStudents != null">total_students = #{totalStudents},</if>
+            <if test="classId != null and classId != ''">class_id = #{classId},</if>
+            <if test="eaclassId != null">EAclass_id = #{eaclassId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteClassInfoById" parameterType="Long">
+        delete from class_info where id = #{id}
+    </delete>
+
+    <delete id="deleteClassInfoByIds" parameterType="String">
+        delete from class_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- ==============================================
+         新增：对应 selectCourseClassCount 方法
+         功能：按课程名称分组，统计每个课程的班级总数
+         ============================================== -->
+    <select id="selectCourseClassCount" resultType="map">
+        SELECT
+            course_name AS courseName,  -- 映射到ClassInfo的courseName字段
+            COUNT(class_id) AS count    -- 统计班级数，映射到上面新增的count字段
+        FROM
+            class_info
+        GROUP BY
+            course_name  -- 按课程名称分组
+        ORDER BY
+            COUNT(class_id) DESC  -- 按班级数倒序，方便前端展示热门课程
+        LIMIT 5;  -- 只取前5条
+    </select>
+
+    <!-- 删除全部记录 -->
+    <delete id="deleteAll">
+        DELETE FROM class_info
+    </delete>
+
+    <!-- 批量插入 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO class_info
+        (course_name, course_id, course_num, course_type, total_students, class_id, EAclass_id)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.courseName}, #{item.courseId}, #{item.courseNum}, #{item.courseType},
+            #{item.totalStudents}, #{item.classId}, #{item.eaclassId})
+        </foreach>
+    </insert>
+
+</mapper>

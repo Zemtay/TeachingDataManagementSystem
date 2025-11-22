@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CourseActivityMapper">
+    
+    <resultMap type="CourseActivity" id="CourseActivityResult">
+        <result property="id"    column="id"    />
+        <result property="studentId"    column="student_id"    />
+        <result property="courseName"    column="course_name"    />
+        <result property="classId"    column="class_id"    />
+        <result property="totalDiscussions"    column="total_discussions"    />
+        <result property="totalPosts"    column="total_posts"    />
+        <result property="totalReplies"    column="total_replies"    />
+        <result property="coursePoints"    column="course_points"    />
+        <result property="studentVotes"    column="student_votes"    />
+        <result property="studentVoteRate"    column="student_vote_rate"    />
+        <result property="selectedCount"    column="selected_count"    />
+        <result property="selectedRate"    column="selected_rate"    />
+        <result property="studentAnswers"    column="student_answers"    />
+        <result property="studentAnswerRate"    column="student_answer_rate"    />
+        <result property="studentRatings"    column="student_ratings"    />
+        <result property="studentRatingRate"    column="student_rating_rate"    />
+        <result property="studentTasks"    column="student_tasks"    />
+        <result property="studentTaskRate"    column="student_task_rate"    />
+        <result property="finalScore"    column="final_score"    />
+        <result property="certificateStatus"    column="certificate_status"    />
+    </resultMap>
+
+    <sql id="selectCourseActivityVo">
+        select id, student_id, course_name, class_id, total_discussions, total_posts, total_replies, course_points, student_votes, student_vote_rate, selected_count, selected_rate, student_answers, student_answer_rate, student_ratings, student_rating_rate, student_tasks, student_task_rate, final_score, certificate_status from course_activity
+    </sql>
+
+    <select id="selectCourseActivityList" parameterType="CourseActivity" resultMap="CourseActivityResult">
+        <include refid="selectCourseActivityVo"/>
+        <where>  
+            <if test="studentId != null  and studentId != ''"> and student_id = #{studentId}</if>
+            <if test="courseName != null  and courseName != ''"> and course_name like concat('%', #{courseName}, '%')</if>
+            <if test="classId != null  and classId != ''"> and class_id = #{classId}</if>
+            <if test="totalDiscussions != null "> and total_discussions = #{totalDiscussions}</if>
+            <if test="totalPosts != null "> and total_posts = #{totalPosts}</if>
+            <if test="totalReplies != null "> and total_replies = #{totalReplies}</if>
+            <if test="coursePoints != null "> and course_points = #{coursePoints}</if>
+            <if test="studentVotes != null "> and student_votes = #{studentVotes}</if>
+            <if test="studentVoteRate != null "> and student_vote_rate = #{studentVoteRate}</if>
+            <if test="selectedCount != null "> and selected_count = #{selectedCount}</if>
+            <if test="selectedRate != null "> and selected_rate = #{selectedRate}</if>
+            <if test="studentAnswers != null "> and student_answers = #{studentAnswers}</if>
+            <if test="studentAnswerRate != null "> and student_answer_rate = #{studentAnswerRate}</if>
+            <if test="studentRatings != null "> and student_ratings = #{studentRatings}</if>
+            <if test="studentRatingRate != null "> and student_rating_rate = #{studentRatingRate}</if>
+            <if test="studentTasks != null "> and student_tasks = #{studentTasks}</if>
+            <if test="studentTaskRate != null "> and student_task_rate = #{studentTaskRate}</if>
+            <if test="finalScore != null "> and final_score = #{finalScore}</if>
+            <if test="certificateStatus != null  and certificateStatus != ''"> and certificate_status = #{certificateStatus}</if>
+            <if test="courseNameList != null and courseNameList.size() > 0">
+                AND course_name IN
+                <foreach collection="courseNameList" item="name" open="(" separator="," close=")">
+                    #{name}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectCourseActivityById" parameterType="Long" resultMap="CourseActivityResult">
+        <include refid="selectCourseActivityVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertCourseActivity" parameterType="CourseActivity" useGeneratedKeys="true" keyProperty="id">
+        insert into course_activity
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="studentId != null and studentId != ''">student_id,</if>
+            <if test="courseName != null">course_name,</if>
+            <if test="classId != null and classId != ''">class_id,</if>
+            <if test="totalDiscussions != null">total_discussions,</if>
+            <if test="totalPosts != null">total_posts,</if>
+            <if test="totalReplies != null">total_replies,</if>
+            <if test="coursePoints != null">course_points,</if>
+            <if test="studentVotes != null">student_votes,</if>
+            <if test="studentVoteRate != null">student_vote_rate,</if>
+            <if test="selectedCount != null">selected_count,</if>
+            <if test="selectedRate != null">selected_rate,</if>
+            <if test="studentAnswers != null">student_answers,</if>
+            <if test="studentAnswerRate != null">student_answer_rate,</if>
+            <if test="studentRatings != null">student_ratings,</if>
+            <if test="studentRatingRate != null">student_rating_rate,</if>
+            <if test="studentTasks != null">student_tasks,</if>
+            <if test="studentTaskRate != null">student_task_rate,</if>
+            <if test="finalScore != null">final_score,</if>
+            <if test="certificateStatus != null">certificate_status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="studentId != null and studentId != ''">#{studentId},</if>
+            <if test="courseName != null">#{courseName},</if>
+            <if test="classId != null and classId != ''">#{classId},</if>
+            <if test="totalDiscussions != null">#{totalDiscussions},</if>
+            <if test="totalPosts != null">#{totalPosts},</if>
+            <if test="totalReplies != null">#{totalReplies},</if>
+            <if test="coursePoints != null">#{coursePoints},</if>
+            <if test="studentVotes != null">#{studentVotes},</if>
+            <if test="studentVoteRate != null">#{studentVoteRate},</if>
+            <if test="selectedCount != null">#{selectedCount},</if>
+            <if test="selectedRate != null">#{selectedRate},</if>
+            <if test="studentAnswers != null">#{studentAnswers},</if>
+            <if test="studentAnswerRate != null">#{studentAnswerRate},</if>
+            <if test="studentRatings != null">#{studentRatings},</if>
+            <if test="studentRatingRate != null">#{studentRatingRate},</if>
+            <if test="studentTasks != null">#{studentTasks},</if>
+            <if test="studentTaskRate != null">#{studentTaskRate},</if>
+            <if test="finalScore != null">#{finalScore},</if>
+            <if test="certificateStatus != null">#{certificateStatus},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCourseActivity" parameterType="CourseActivity">
+        update course_activity
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="studentId != null and studentId != ''">student_id = #{studentId},</if>
+            <if test="courseName != null">course_name = #{courseName},</if>
+            <if test="classId != null and classId != ''">class_id = #{classId},</if>
+            <if test="totalDiscussions != null">total_discussions = #{totalDiscussions},</if>
+            <if test="totalPosts != null">total_posts = #{totalPosts},</if>
+            <if test="totalReplies != null">total_replies = #{totalReplies},</if>
+            <if test="coursePoints != null">course_points = #{coursePoints},</if>
+            <if test="studentVotes != null">student_votes = #{studentVotes},</if>
+            <if test="studentVoteRate != null">student_vote_rate = #{studentVoteRate},</if>
+            <if test="selectedCount != null">selected_count = #{selectedCount},</if>
+            <if test="selectedRate != null">selected_rate = #{selectedRate},</if>
+            <if test="studentAnswers != null">student_answers = #{studentAnswers},</if>
+            <if test="studentAnswerRate != null">student_answer_rate = #{studentAnswerRate},</if>
+            <if test="studentRatings != null">student_ratings = #{studentRatings},</if>
+            <if test="studentRatingRate != null">student_rating_rate = #{studentRatingRate},</if>
+            <if test="studentTasks != null">student_tasks = #{studentTasks},</if>
+            <if test="studentTaskRate != null">student_task_rate = #{studentTaskRate},</if>
+            <if test="finalScore != null">final_score = #{finalScore},</if>
+            <if test="certificateStatus != null">certificate_status = #{certificateStatus},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCourseActivityById" parameterType="Long">
+        delete from course_activity where id = #{id}
+    </delete>
+
+    <delete id="deleteCourseActivityByIds" parameterType="String">
+        delete from course_activity where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 删除全部记录 -->
+    <delete id="deleteAll">
+        DELETE FROM course_activity
+    </delete>
+
+    <!-- 批量插入 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO course_activity
+        (student_id, course_name, class_id, total_discussions, total_posts, total_replies,
+         course_points, student_votes, student_vote_rate, selected_count, selected_rate,
+         student_answers, student_answer_rate, student_ratings, student_rating_rate,
+         student_tasks, student_task_rate, final_score, certificate_status)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.studentId}, #{item.courseName}, #{item.classId}, #{item.totalDiscussions}, 
+             #{item.totalPosts}, #{item.totalReplies}, #{item.coursePoints}, #{item.studentVotes},
+             #{item.studentVoteRate}, #{item.selectedCount}, #{item.selectedRate}, #{item.studentAnswers},
+             #{item.studentAnswerRate}, #{item.studentRatings}, #{item.studentRatingRate},
+             #{item.studentTasks}, #{item.studentTaskRate}, #{item.finalScore}, #{item.certificateStatus})
+        </foreach>
+    </insert>
+
+</mapper>

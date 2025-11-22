@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.DynamicQueryMapper">
+
+    <select id="dynamicSelect" resultType="map">
+        SELECT * FROM ${tableName}
+        <where>
+            <foreach collection="conditions" item="value" index="key">
+                AND ${key} = #{value}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="dynamicQuery" resultType="map">
+        ${sql}
+    </select>
+
+</mapper>
+<!--        SELECT course_name, total_students FROM course_info WHERE course_name = '人工智能导引';-->

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.StudentMapper">
+    
+    <resultMap type="Student" id="StudentResult">
+        <result property="studentId"    column="student_id"    />
+        <result property="courseCount"    column="course_count"    />
+        <result property="tasksCompleted"    column="tasks_completed"    />
+        <result property="videoTasksCompleted"    column="video_tasks_completed"    />
+        <result property="chapterTestsCompleted"    column="chapter_tests_completed"    />
+        <result property="homeworkCompleted"    column="homework_completed"    />
+        <result property="examsCompleted"    column="exams_completed"    />
+        <result property="chapterStudyCount"    column="chapter_study_count"    />
+        <result property="totalDiscussions"    column="total_discussions"    />
+        <result property="totalPosts"    column="total_posts"    />
+        <result property="totalReplies"    column="total_replies"    />
+        <result property="coursePoints"    column="course_points"    />
+        <result property="studentVotes"    column="student_votes"    />
+        <result property="selectedCount"    column="selected_count"    />
+        <result property="studentAnswers"    column="student_answers"    />
+        <result property="studentRatings"    column="student_ratings"    />
+        <result property="studentTasks"    column="student_tasks"    />
+    </resultMap>
+
+    <select id="selectAllStudents" resultMap="StudentResult">
+        SELECT * FROM student
+    </select>
+
+    <select id="selectTop10ByCourseCount" resultMap="StudentResult">
+        SELECT * FROM student
+        ORDER BY course_count DESC
+            LIMIT 10
+    </select>
+
+    <sql id="selectStudentVo">
+        select student_id, course_count, tasks_completed, video_tasks_completed, chapter_tests_completed, homework_completed, exams_completed, chapter_study_count, total_discussions, total_posts, total_replies, course_points, student_votes, selected_count, student_answers, student_ratings, student_tasks from student
+    </sql>
+
+    <select id="selectStudentList" parameterType="Student" resultMap="StudentResult">
+        <include refid="selectStudentVo"/>
+        <where>  
+            <if test="courseCount != null "> and course_count = #{courseCount}</if>
+            <if test="tasksCompleted != null "> and tasks_completed = #{tasksCompleted}</if>
+            <if test="videoTasksCompleted != null "> and video_tasks_completed = #{videoTasksCompleted}</if>
+            <if test="chapterTestsCompleted != null "> and chapter_tests_completed = #{chapterTestsCompleted}</if>
+            <if test="homeworkCompleted != null "> and homework_completed = #{homeworkCompleted}</if>
+            <if test="examsCompleted != null "> and exams_completed = #{examsCompleted}</if>
+            <if test="chapterStudyCount != null "> and chapter_study_count = #{chapterStudyCount}</if>
+            <if test="totalDiscussions != null "> and total_discussions = #{totalDiscussions}</if>
+            <if test="totalPosts != null "> and total_posts = #{totalPosts}</if>
+            <if test="totalReplies != null "> and total_replies = #{totalReplies}</if>
+            <if test="coursePoints != null "> and course_points = #{coursePoints}</if>
+            <if test="studentVotes != null "> and student_votes = #{studentVotes}</if>
+            <if test="selectedCount != null "> and selected_count = #{selectedCount}</if>
+            <if test="studentAnswers != null "> and student_answers = #{studentAnswers}</if>
+            <if test="studentRatings != null "> and student_ratings = #{studentRatings}</if>
+            <if test="studentTasks != null "> and student_tasks = #{studentTasks}</if>
+        </where>
+    </select>
+    
+    <select id="selectStudentByStudentId" parameterType="String" resultMap="StudentResult">
+        <include refid="selectStudentVo"/>
+        where student_id = #{studentId}
+    </select>
+
+    <insert id="insertStudent" parameterType="Student">
+        insert into student
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="studentId != null">student_id,</if>
+            <if test="courseCount != null">course_count,</if>
+            <if test="tasksCompleted != null">tasks_completed,</if>
+            <if test="videoTasksCompleted != null">video_tasks_completed,</if>
+            <if test="chapterTestsCompleted != null">chapter_tests_completed,</if>
+            <if test="homeworkCompleted != null">homework_completed,</if>
+            <if test="examsCompleted != null">exams_completed,</if>
+            <if test="chapterStudyCount != null">chapter_study_count,</if>
+            <if test="totalDiscussions != null">total_discussions,</if>
+            <if test="totalPosts != null">total_posts,</if>
+            <if test="totalReplies != null">total_replies,</if>
+            <if test="coursePoints != null">course_points,</if>
+            <if test="studentVotes != null">student_votes,</if>
+            <if test="selectedCount != null">selected_count,</if>
+            <if test="studentAnswers != null">student_answers,</if>
+            <if test="studentRatings != null">student_ratings,</if>
+            <if test="studentTasks != null">student_tasks,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="studentId != null">#{studentId},</if>
+            <if test="courseCount != null">#{courseCount},</if>
+            <if test="tasksCompleted != null">#{tasksCompleted},</if>
+            <if test="videoTasksCompleted != null">#{videoTasksCompleted},</if>
+            <if test="chapterTestsCompleted != null">#{chapterTestsCompleted},</if>
+            <if test="homeworkCompleted != null">#{homeworkCompleted},</if>
+            <if test="examsCompleted != null">#{examsCompleted},</if>
+            <if test="chapterStudyCount != null">#{chapterStudyCount},</if>
+            <if test="totalDiscussions != null">#{totalDiscussions},</if>
+            <if test="totalPosts != null">#{totalPosts},</if>
+            <if test="totalReplies != null">#{totalReplies},</if>
+            <if test="coursePoints != null">#{coursePoints},</if>
+            <if test="studentVotes != null">#{studentVotes},</if>
+            <if test="selectedCount != null">#{selectedCount},</if>
+            <if test="studentAnswers != null">#{studentAnswers},</if>
+            <if test="studentRatings != null">#{studentRatings},</if>
+            <if test="studentTasks != null">#{studentTasks},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStudent" parameterType="Student">
+        update student
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="courseCount != null">course_count = #{courseCount},</if>
+            <if test="tasksCompleted != null">tasks_completed = #{tasksCompleted},</if>
+            <if test="videoTasksCompleted != null">video_tasks_completed = #{videoTasksCompleted},</if>
+            <if test="chapterTestsCompleted != null">chapter_tests_completed = #{chapterTestsCompleted},</if>
+            <if test="homeworkCompleted != null">homework_completed = #{homeworkCompleted},</if>
+            <if test="examsCompleted != null">exams_completed = #{examsCompleted},</if>
+            <if test="chapterStudyCount != null">chapter_study_count = #{chapterStudyCount},</if>
+            <if test="totalDiscussions != null">total_discussions = #{totalDiscussions},</if>
+            <if test="totalPosts != null">total_posts = #{totalPosts},</if>
+            <if test="totalReplies != null">total_replies = #{totalReplies},</if>
+            <if test="coursePoints != null">course_points = #{coursePoints},</if>
+            <if test="studentVotes != null">student_votes = #{studentVotes},</if>
+            <if test="selectedCount != null">selected_count = #{selectedCount},</if>
+            <if test="studentAnswers != null">student_answers = #{studentAnswers},</if>
+            <if test="studentRatings != null">student_ratings = #{studentRatings},</if>
+            <if test="studentTasks != null">student_tasks = #{studentTasks},</if>
+        </trim>
+        where student_id = #{studentId}
+    </update>
+
+    <delete id="deleteStudentByStudentId" parameterType="String">
+        delete from student where student_id = #{studentId}
+    </delete>
+
+    <delete id="deleteStudentByStudentIds" parameterType="String">
+        delete from student where student_id in 
+        <foreach item="studentId" collection="array" open="(" separator="," close=")">
+            #{studentId}
+        </foreach>
+    </delete>
+
+    <!-- 删除全部记录 -->
+    <delete id="deleteAll">
+        DELETE FROM student
+    </delete>
+
+    <!-- 批量插入 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO student
+        (student_id, course_count, tasks_completed, video_tasks_completed, chapter_tests_completed,
+         homework_completed, exams_completed, chapter_study_count, total_discussions, total_posts,
+         total_replies, course_points, student_votes, selected_count, student_answers, student_ratings, student_tasks)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.studentId}, #{item.courseCount}, #{item.tasksCompleted}, #{item.videoTasksCompleted},
+             #{item.chapterTestsCompleted}, #{item.homeworkCompleted}, #{item.examsCompleted}, #{item.chapterStudyCount},
+             #{item.totalDiscussions}, #{item.totalPosts}, #{item.totalReplies}, #{item.coursePoints},
+             #{item.studentVotes}, #{item.selectedCount}, #{item.studentAnswers}, #{item.studentRatings}, #{item.studentTasks})
+        </foreach>
+    </insert>
+
+</mapper>

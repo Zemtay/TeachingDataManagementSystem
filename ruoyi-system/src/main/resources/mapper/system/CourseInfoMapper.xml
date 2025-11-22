@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CourseInfoMapper">
+    
+    <!-- 结果集映射：修正result标签语法错误（property和column间加空格） -->
+    <resultMap type="CourseInfo" id="CourseInfoResult">
+        <result property="id"            column="id"            />
+        <result property="courseName"    column="course_name"    />
+        <result property="courseNum"     column="course_num"     />
+        <!-- 错误位置：原代码是 property="courseSemester"column=... 少了空格 -->
+        <result property="courseSemester" column="course_semester"/>
+        <result property="creatorId"     column="creator_id"     />
+        <result property="classCount"    column="class_count"    />
+        <result property="totalStudents" column="total_students" />
+        <!-- 新增：映射“统计的课程数量”（对应selectTop5CourseCreators的count结果） -->
+        <result property="courseCount"   column="course_count"   />
+    </resultMap>
+
+    <sql id="selectCourseInfoVo">
+        select id, course_name, course_num, course_semester, creator_id, class_count, total_students from course_info
+    </sql>
+
+    <select id="selectCourseInfoList" parameterType="CourseInfo" resultMap="CourseInfoResult">
+        <include refid="selectCourseInfoVo"/>
+        <where>  
+            <if test="courseName != null  and courseName != ''"> and course_name like concat('%', #{courseName}, '%')</if>
+            <if test="courseNum != null  and courseNum != ''"> and course_num = #{courseNum}</if>
+            <if test="courseSemester != null  and courseSemester != ''"> and course_semester = #{courseSemester}</if>
+            <if test="creatorId != null  and creatorId != ''"> and creator_id = #{creatorId}</if>
+            <if test="classCount != null "> and class_count = #{classCount}</if>
+            <if test="totalStudents != null "> and total_students = #{totalStudents}</if>
+        </where>
+    </select>
+    
+    <select id="selectCourseInfoById" parameterType="Long" resultMap="CourseInfoResult">
+        <include refid="selectCourseInfoVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertCourseInfo" parameterType="CourseInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into course_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="courseName != null and courseName != ''">course_name,</if>
+            <if test="courseNum != null and courseNum != ''">course_num,</if>
+            <if test="courseSemester != null">course_semester,</if>
+            <if test="creatorId != null">creator_id,</if>
+            <if test="classCount != null">class_count,</if>
+            <if test="totalStudents != null">total_students,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="courseName != null and courseName != ''">#{courseName},</if>
+            <if test="courseNum != null and courseNum != ''">#{courseNum},</if>
+            <if test="courseSemester != null">#{courseSemester},</if>
+            <if test="creatorId != null">#{creatorId},</if>
+            <if test="classCount != null">#{classCount},</if>
+            <if test="totalStudents != null">#{totalStudents},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCourseInfo" parameterType="CourseInfo">
+        update course_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="courseName != null and courseName != ''">course_name = #{courseName},</if>
+            <if test="courseNum != null and courseNum != ''">course_num = #{courseNum},</if>
+            <if test="courseSemester != null">course_semester = #{courseSemester},</if>
+            <if test="creatorId != null">creator_id = #{creatorId},</if>
+            <if test="classCount != null">class_count = #{classCount},</if>
+            <if test="totalStudents != null">total_students = #{totalStudents},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCourseInfoById" parameterType="Long">
+        delete from course_info where id = #{id}
+    </delete>
+
+    <delete id="deleteCourseInfoByIds" parameterType="String">
+        delete from course_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 删除全部记录 -->
+    <delete id="deleteAll">
+        DELETE FROM course_info
+    </delete>
+
+    <!-- 批量插入 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO course_info
+        (course_name, course_num, course_semester, creator_id, class_count, total_students)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.courseName}, #{item.courseNum}, #{item.courseSemester}, #{item.creatorId}, #{item.classCount}, #{item.totalStudents})
+        </foreach>
+    </insert>
+
+
+    <!-- ==============================================
+         新增1：对应 selectTop5CourseCreators 方法
+         功能：按 creator_id 分组，统计每个教师创建的课程数，取前5
+         已删除：WHERE del_flag = '0'（表中无该字段）
+         ============================================== -->
+    <select id="selectTop5CourseCreators" resultType="java.util.Map">
+        SELECT
+            creator_id AS creatorId,  -- 映射到实体的 creatorId 字段
+            COUNT(creator_id) AS courseCount  -- 统计课程数量，映射到上面新增的 courseCount 字段
+        FROM
+            course_info
+        GROUP BY
+            creator_id  -- 按教师工号分组
+        ORDER BY
+            COUNT(creator_id) DESC  -- 按课程数倒序
+        LIMIT 5;  -- 只取前5条
+    </select>
+
+    <!-- ==============================================
+         新增2：对应 selectCourseStudentCount 方法
+         功能：按 course_name 分组，汇总每个课程的学生总数
+         已删除：WHERE del_flag = '0'（表中无该字段）
+         ============================================== -->
+    <select id="selectCourseStudentCount" resultType="java.util.Map">
+        SELECT
+            course_name AS courseName,  -- 映射到实体的 courseName 字段
+            SUM(total_students) AS totalStudents  -- 汇总学生数，映射到实体的 totalStudents 字段
+        FROM
+            course_info
+        GROUP BY
+            course_name  -- 按课程名称分组
+        ORDER BY
+            SUM(total_students) DESC  -- 按学生数倒序（可选）
+        LIMIT 5;  -- 只取前5条
+    </select>
+
+    <!-- ==============================================
+         新增3：对应 selectClassInfoStats 方法
+         功能：查询课程统计信息（页面ClassInfo需要的所有数据）
+         已删除：所有子查询中的 WHERE del_flag = '0'（表中无该字段）
+         ============================================== -->
+    <select id="selectClassInfoStats" resultType="java.util.Map">
+        SELECT
+            -- 不同班级ID总数（从class_info表查）
+            (SELECT COUNT(DISTINCT class_id) FROM class_info) AS distinct_class_ids,
+            -- 不同课程名称总数（从course_info表查）
+            (SELECT COUNT(DISTINCT course_name) FROM course_info) AS distinct_course_names,
+            -- 学生数量最多的课程名称
+            (SELECT course_name FROM course_info ORDER BY total_students DESC LIMIT 1) AS top_course_name,
+            -- 学生数量最多的课程人数
+            (SELECT total_students FROM course_info ORDER BY total_students DESC LIMIT 1) AS top_course_students,
+            -- 班级数量最多的课程名称
+            (SELECT course_name FROM class_info GROUP BY course_name ORDER BY COUNT(class_id) DESC LIMIT 1) AS max_class_course,
+            -- 班级数量最多的课程的班级数
+            (SELECT COUNT(class_id) FROM class_info GROUP BY course_name ORDER BY COUNT(class_id) DESC LIMIT 1) AS max_class_count,
+            -- 平均学生数最多的课程名称
+            (SELECT course_name FROM course_info GROUP BY course_name ORDER BY AVG(total_students) DESC LIMIT 1) AS avg_student_course,
+            -- 平均学生数最多的课程的平均人数
+            (SELECT ROUND(AVG(total_students),0) FROM course_info GROUP BY course_name ORDER BY AVG(total_students) DESC LIMIT 1) AS avg_student_count
+    </select>
+</mapper>
