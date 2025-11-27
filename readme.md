@@ -61,7 +61,15 @@
 1. 进入前端目录 `ruoyi-ui`，执行 `npm install` 安装依赖（若依赖安装失败，可尝试 `npm install --registry=https://registry.npm.taobao.org`）；  
 2. 执行 `npm run dev` 启动前端服务，默认访问地址：`http://localhost:80`（可在 `vue.config.js` 中修改端口）。
 
-### 4. 数据初始化与使用
+### 4. 大模型部署
+```
+export CUDA_VISIBLE_DEVICES=0
+python -m vllm.entrypoints.openai.api_server \
+ --model path/Qwen2.5-7B-Instruct \
+ --served-model-name Qwen2.5-7B-Instruct \
+ --port 8001 --api-key 123456
+```
+### 5. 数据初始化与使用
 1. 超级管理员登录（默认账号 `admin`，初始密码 `admin123`），首次登录需修改密码；  
 2. 超级管理员创建“教务”“教师”角色并分配权限：教务角色授予“数据上传”“全局数据分析”“数据表管理”权限，教师角色授予“本人课程数据查看”“学情分析”“AI助手”权限；  
 3. 教务账号登录，上传超星学习通导出的 Excel/CSV 数据（需包含课程编号、班级ID、学生学号、互动数据等关键字段），系统自动完成数据清洗与存储；  
