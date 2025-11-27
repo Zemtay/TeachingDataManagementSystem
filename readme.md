@@ -40,7 +40,7 @@
 |--------------|------------------------------------------------------------------------------|
 | 核心框架     | 若依（RuoYi）：提供权限管理（RBAC）、会话控制、日志审计、菜单动态渲染基础；Spring Boot（后端业务逻辑）、Vue（前端可视化） |
 | 前端技术     | Element UI（组件库）、Chart.js（动态图表）、Axios（异步接口交互）、Vue Router（路由守卫，控制角色页面访问权限） |
-| 数据分析     | Python Pandas（数据清洗）、Matplotlib（静态图表生成）、Qwen2.5-7B-Instruct（本地部署大模型，支持意图识别与Text2SQL） |
+| 数据分析     | MySQL数据筛选查询、Matplotlib（静态图表生成）、Chart.js（动态图表生成）、Qwen2.5-7B-Instruct（本地部署大模型，支持意图识别与Text2SQL） |
 | 数据存储     | MySQL（核心数据表：CourseInfo课程信息表、ClassInfo班级信息表、Student学生信息表、CourseActivity课程活动表），支持PostgreSQL适配 |
 | 安全机制     | PBKDF2 口令加密、RBAC 角色权限模型、数据行级过滤（教师仅访问本人授课数据）、SQL注入防护、Web目录安全检测、操作日志审计 |
 | 接口风格     | RESTful，支持批量操作、分页查询、复杂条件筛选，全接口详见 [API文档.md](API文档.md)            |
