@@ -108,6 +108,27 @@
           </div>
         </div>
 
+        <!-- 4. 雷达图 -->
+        <div class="analysis-card radar" @click="openChartBox('radar')">
+          <div class="card-header">
+            <h2 class="card-title">课程雷达图</h2>
+          </div>
+          <div class="card-content">
+            <div v-for="(course, index) in courseDetails" :key="index">
+              <div class="stats-item">
+                <span class="stats-label">课程名称：{{ course.name }}</span>
+              </div>
+<!--              <li>-->
+              <span class="stats-value">平均任务完成率: {{ course.avgTasks }}<br></span>
+                <span class="stats-value">平均问题回答率: {{ course.avgAnswers }}<br></span>
+                <span class="stats-value">平均评分参与率: {{ course.avgRating }}<br></span>
+                <span class="stats-value">平均选人选中率: {{ course.avgSelecting }}<br></span>
+                <span class="stats-value">平均课堂投票率: {{ course.avgVoting }}<br></span>
+<!--              </li>-->
+            </div>
+          </div>
+        </div>
+
 <!--        &lt;!&ndash; 班级信息汇总 &ndash;&gt;-->
 <!--        <div class="analysis-card course-progress">-->
 <!--          <div class="card-header">-->
@@ -300,6 +321,67 @@ export default {
             options: commonOptions
           }
 
+        case 'radar': {
+          const colors = [
+            'rgba(54,162,235,',
+            'rgba(255,99,132,',
+            'rgba(75,192,192,',
+            'rgba(255,206,86,',
+            'rgba(153,102,255,'
+          ]
+          const datasets = this.courseDetails.map((c, idx) => {
+            const color = colors[idx % colors.length]
+            // 关键：把小数 ×100 变成百分比
+            const data = [
+              Math.round((c.avgTasks || 0) * 10000) / 100,
+              Math.round((c.avgAnswers || 0) * 10000) / 100,
+              Math.round((c.avgRating || 0) * 10000) / 100,
+              Math.round((c.avgSelecting || 0) * 10000) / 100,
+              Math.round((c.avgVoting || 0) * 10000) / 100
+            ]
+            return {
+              label: c.name,
+              data,
+              backgroundColor: color + '0.2)',
+              borderColor: color + '1)',
+              borderWidth: 2,
+              pointBackgroundColor: color + '1)'
+            }
+          })
+
+          return {
+            type: 'radar',
+            data: {
+              labels: ['任务完成率', '问题回答率', '评分参与率', '选人选中率', '课堂投票率'],
+              datasets
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                r: {
+                  beginAtZero: true,
+                  max: 100,          // 强制 0-100%
+                  ticks: {
+                    stepSize: 20,
+                    color: 'white',
+                    callback: v => v + '%'   // 显示百分号
+                  },
+                  grid: { color: 'rgba(255,255,255,0.2)' },
+                  pointLabels: { color: 'white' }
+                }
+              },
+              plugins: {
+                legend: { labels: { color: 'white' } },
+                tooltip: {
+                  callbacks: {
+                    label: ctx => `${ctx.dataset.label}: ${ctx.parsed.r}%`
+                  }
+                }
+              }
+            }
+          }
+        }
         default:
           return {
             type: 'line',

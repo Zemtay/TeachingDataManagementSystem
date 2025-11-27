@@ -141,7 +141,6 @@ public class StudyInfoController {
             for(Map<String, Object> map:bottom5FinalScore){
                 performance_detail += String.format("学号%s，任务完成次数%s；", map.get("studentId"), map.get("finalScore"));
             }
-
             double avgTasks = courseaclist.stream()
                     .filter(c -> c.getStudentTaskRate() != null) // 避免空指针
                     .mapToDouble(c -> c.getStudentTaskRate().doubleValue()) // BigDecimal 转 double
@@ -164,7 +163,21 @@ public class StudyInfoController {
                     .average()
                     .orElse(0); // 如果列表为空返回 0
             course.put("avgRating", avgRating);
-            msg2_tmp += String.format("学生平均课堂投票率为：%f；", avgRating);
+            msg2_tmp += String.format("学生平均评分参与率为：%f；", avgRating);
+
+            double avgSelecting = courseaclist.stream()
+                    .filter(c -> c.getSelectedRate() != null) // 避免空指针
+                    .mapToDouble(c -> c.getSelectedRate().doubleValue()) // BigDecimal 转 double
+                    .average()
+                    .orElse(0); // 如果列表为空返回 0
+            course.put("avgSelecting", avgSelecting);
+
+            double avgVoting = courseaclist.stream()
+                    .filter(c -> c.getStudentVoteRate() != null) // 避免空指针
+                    .mapToDouble(c -> c.getStudentVoteRate().doubleValue()) // BigDecimal 转 double
+                    .average()
+                    .orElse(0); // 如果列表为空返回 0
+            course.put("avgVoting", avgVoting);
 
             double avgScore = courseaclist.stream()
                     .filter(c -> c.getFinalScore() != null) // 避免空指针
