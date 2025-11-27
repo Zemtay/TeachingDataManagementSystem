@@ -56,7 +56,7 @@
       <!-- 数据卡片区域 -->
       <div class="dashboard">
         <!-- 1. 固定教师创建的班数 -->
-        <div class="analysis-card attendance" @click="openChartBox('fixedTeacherClassBar')">
+        <div class="analysis-card attendance" @click="openChartBox('scatter')">
           <div class="card-header">
             <h2 class="card-title">📊 教学统计</h2>
           </div>
@@ -382,6 +382,67 @@ export default {
             }
           }
         }
+
+        case 'scatter': {
+          const colorPool = [
+            'rgba(54,162,235,',
+            'rgba(255,99,132,',
+            'rgba(75,192,192,',
+            'rgba(255,206,86,',
+            'rgba(153,102,255,'
+          ]
+
+          const datasets = this.courseDetails.map((c, idx) => {
+            const color = colorPool[idx % colorPool.length]
+            const points = (c.stuScatterList || []).map(s => ({
+              x: s.CoursePoints ?? 0,
+              y: s.FinalScore ?? 0
+            }))
+            return {
+              label: c.name,
+              data: points,
+              backgroundColor: color + '0.8)',
+              borderColor: color + '1)',
+              pointRadius: 5,
+              pointHoverRadius: 7
+            }
+          }).filter(d => d.data.length > 0)
+
+          return {
+            type: 'scatter',
+            data: { datasets },
+            options: {
+              title: {
+                display: true,
+                text: '学生成绩散点图（课堂积分 vs 总成绩）',
+                fontColor: 'white',
+                fontSize: 18
+              },
+              scales: {
+                xAxes: [{
+                  scaleLabel: {
+                    display: true,
+                    labelString: '课堂积分',
+                    fontColor: 'white',
+                    fontSize: 14
+                  },
+                  ticks: { fontColor: 'white' }
+                }],
+                yAxes: [{
+                  scaleLabel: {
+                    display: true,
+                    labelString: '总成绩',
+                    fontColor: 'white',
+                    fontSize: 14
+                  },
+                  ticks: { fontColor: 'white' }
+                }]
+              }
+            }
+
+          }
+        }
+
         default:
           return {
             type: 'line',

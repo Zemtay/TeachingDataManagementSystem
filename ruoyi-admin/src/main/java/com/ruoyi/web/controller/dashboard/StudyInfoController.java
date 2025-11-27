@@ -74,9 +74,23 @@ public class StudyInfoController {
 
             class_detail += String.format("%s有%d名学生，平均每个班级有%d名学生。",course.get("name"), course.get("totalStudents"), course.get("avgStudent"));
             msg2_tmp += String.format("\n%s课的学生参与情况具体如下：\n", course.get("name"));
-            List<CourseActivity> courseaclist = courseActivityService.selectCourseActivityList(courseActivity);
+            CourseActivity queryAct = new CourseActivity();
+            queryAct.setCourseName(courseInfo.getCourseName());
+
+            List<CourseActivity> courseaclist = courseActivityService.selectCourseActivityList(queryAct);
             // 对每个班级进行处理
 //            System.out.println(courseaclist);
+            List<Map<String,Object>> stuScatterList = courseaclist.stream()
+                    .map(act -> {
+                        Map<String,Object> m = new HashMap<>();
+                        m.put("studentId", act.getStudentId());
+                        m.put("CoursePoints", act.getCoursePoints());
+                        m.put("FinalScore", act.getFinalScore());
+                        return m;
+                    })
+                    .collect(Collectors.toList());
+            course.put("stuScatterList", stuScatterList);
+
             List<Map<String, Object>> bottom5SelectedStudents = courseaclist.stream()
                     .sorted(Comparator.comparingLong(CourseActivity::getSelectedCount))
                     .limit(5)

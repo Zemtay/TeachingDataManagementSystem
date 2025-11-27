@@ -86,7 +86,12 @@
             <artifactId>service</artifactId>
             <version>0.22.92</version>
         </dependency>
-<!--        <dependency>-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!--        <dependency>-->
 <!--            <groupId>com.openai</groupId>-->
 <!--            <artifactId>openai-java</artifactId>-->
 <!--            <version>1.6.1</version>-->
