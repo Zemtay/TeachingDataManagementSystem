@@ -189,9 +189,3 @@
 - controller 层暴露的 URL 路径/参数对应（前端请求参考）
 
 如需针对某对象/业务/SQL接口进一步详细分析，请指定 domain/service/mapper 名称。
-
----
-
-[查看更多 service 文件](https://github.com/Zemtay/manage_system/search?q=service&type=code)  
-[更多 mapper SQL 能力参考](https://github.com/Zemtay/manage_system/search?q=mapper&type=code)  
-[所有 domain 数据模型定义](https://github.com/Zemtay/manage_system/search?q=domain&type=code)  
